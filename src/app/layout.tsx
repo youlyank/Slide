@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "../styles/zai.css";
 import { Toaster } from "sonner";
 import { Providers } from "@/components/providers";
 
@@ -15,24 +16,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI Slides - Intelligent Presentation Generator",
-  description: "Create stunning presentations with AI-powered content generation. Built with Next.js, TypeScript, and modern web technologies.",
-  keywords: ["AI Slides", "Presentations", "AI", "Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "presentation generator"],
-  authors: [{ name: "AI Slides Team" }],
+  title: "Z.AI Slides - AI-Powered Presentation Generator",
+  description: "Transform your ideas into stunning presentations with AI. Built by Z.AI, the leading AI platform.",
+  keywords: ["Z.AI", "AI Slides", "Presentations", "Artificial Intelligence", "Presentation Generator", "AI Tools"],
+  authors: [{ name: "Z.AI Team" }],
   icons: {
     icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
   },
   openGraph: {
-    title: "AI Slides - Intelligent Presentation Generator",
-    description: "Create stunning presentations with AI-powered content generation",
-    url: "https://chat.z.ai",
-    siteName: "AI Slides",
+    title: "Z.AI Slides - AI-Powered Presentation Generator",
+    description: "Transform your ideas into stunning presentations with AI",
+    url: "https://z.ai/slides",
+    siteName: "Z.AI Slides",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Slides - Intelligent Presentation Generator",
-    description: "Create stunning presentations with AI-powered content generation",
+    title: "Z.AI Slides - AI-Powered Presentation Generator",
+    description: "Transform your ideas into stunning presentations with AI",
   },
 };
 

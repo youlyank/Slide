@@ -4,30 +4,28 @@ import { useState, useCallback, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
+import { Card, CardContent } from '@/components/ui/card'
 import { 
-  Plus, 
-  Save, 
-  Download, 
-  Play, 
-  Settings, 
-  Users, 
-  Zap,
-  FileText,
-  Lightbulb,
-  Sparkles,
-  Presentation,
+  Sparkles, 
+  Wand2, 
+  FileText, 
+  Download,
+  Play,
+  Settings,
+  Plus,
   Trash2,
-  HelpCircle,
-  X
+  Copy,
+  Edit3,
+  Eye,
+  Layers,
+  Palette,
+  Layout,
+  Type,
+  Image as ImageIcon,
+  BarChart3,
+  Zap
 } from 'lucide-react'
-import { SlideList } from '@/components/slide-list'
-import { SlideRenderer } from '@/components/slide-renderer'
-import { SlideTemplateSelector } from '@/components/slide-template-selector'
-import { PresentationMode } from '@/components/presentation-mode'
-import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts'
+import { ZAIPresentationMode } from '@/components/zai-presentation-mode'
 import { toast } from 'sonner'
 
 export interface Slide {
@@ -42,152 +40,18 @@ export default function Home() {
   const [slides, setSlides] = useState<Slide[]>([
     {
       id: '1',
-      title: 'Welcome to AI Slides',
-      content: '<div style="font-family: Arial, sans-serif; text-align: center; padding: 50px;"><h1 style="color: #2563eb; font-size: 3em; margin-bottom: 20px;">Welcome to AI Slides</h1><p style="font-size: 1.2em; color: #64748b;">Create stunning presentations with AI</p></div>',
+      title: 'Welcome to Z.AI Slides',
+      content: '<div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; text-align: center; padding: 60px 20px; height: 100vh; display: flex; flex-direction: column; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin: 0;"><h1 style="font-size: 3.5rem; font-weight: 700; margin-bottom: 1rem; background: linear-gradient(45deg, #fff, #f0f0f0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Welcome to Z.AI Slides</h1><p style="font-size: 1.5rem; opacity: 0.9; max-width: 800px; margin: 0 auto; line-height: 1.6;">Transform your ideas into stunning presentations with AI</p></div>',
       layout: 'title',
       order: 0
-    },
-    {
-      id: '2',
-      title: 'Features Overview',
-      content: '<div style="font-family: Arial, sans-serif; padding: 40px;"><h2 style="color: #1e293b; margin-bottom: 20px;">Key Features</h2><ul style="font-size: 1.1em; line-height: 1.8; color: #475569;"><li>✨ AI-powered content generation</li><li>🎨 Professional templates</li><li>🔄 Real-time collaboration</li><li>📱 Responsive design</li></ul></div>',
-      layout: 'content',
-      order: 1
     }
   ])
   const [selectedSlideIndex, setSelectedSlideIndex] = useState(0)
-  const [presentationTitle, setPresentationTitle] = useState('AI Presentation')
   const [isGenerating, setIsGenerating] = useState(false)
-  const [showTemplates, setShowTemplates] = useState(false)
-  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false)
-  const [isPresentationMode, setIsPresentationMode] = useState(false)
   const [prompt, setPrompt] = useState('')
-
-  // Initialize keyboard shortcuts
-  const shortcuts = useKeyboardShortcuts()
-
-  // Enhanced keyboard shortcuts with actual functionality
-  useEffect(() => {
-    const enhancedShortcuts = {
-      'Ctrl+S': {
-        description: 'Save presentation',
-        action: () => {
-          handleSavePresentation()
-        }
-      },
-      'Ctrl+N': {
-        description: 'Add new slide',
-        action: () => {
-          handleAddSlide()
-        }
-      },
-      'Ctrl+D': {
-        description: 'Duplicate current slide',
-        action: () => {
-          handleDuplicateSlide()
-        }
-      },
-      'Delete': {
-        description: 'Delete current slide',
-        action: () => {
-          handleDeleteSlide(slides[selectedSlideIndex]?.id)
-        }
-      },
-      'ArrowLeft': {
-        description: 'Previous slide',
-        action: () => {
-          if (selectedSlideIndex > 0) {
-            setSelectedSlideIndex(selectedSlideIndex - 1)
-          }
-        }
-      },
-      'ArrowRight': {
-        description: 'Next slide',
-        action: () => {
-          if (selectedSlideIndex < slides.length - 1) {
-            setSelectedSlideIndex(selectedSlideIndex + 1)
-          }
-        }
-      },
-      'Enter': {
-        description: 'Start presentation',
-        action: () => {
-          handleStartPresentation()
-        }
-      }
-    }
-
-    // Override the default shortcuts with enhanced functionality
-    Object.assign(shortcuts, enhancedShortcuts)
-  }, [selectedSlideIndex, slides])
-
-  const handleAddSlide = useCallback(() => {
-    const newSlide: Slide = {
-      id: Date.now().toString(),
-      title: `Slide ${slides.length + 1}`,
-      content: '<div style="padding: 40px; text-align: center;"><h2>New Slide</h2><p>Add your content here</p></div>',
-      layout: 'content',
-      order: slides.length
-    }
-    setSlides([...slides, newSlide])
-    setSelectedSlideIndex(slides.length)
-    toast.success('New slide added')
-  }, [slides])
-
-  const handleDuplicateSlide = useCallback(() => {
-    if (selectedSlideIndex >= 0 && selectedSlideIndex < slides.length) {
-      const currentSlide = slides[selectedSlideIndex]
-      const duplicatedSlide: Slide = {
-        ...currentSlide,
-        id: Date.now().toString(),
-        title: `${currentSlide.title} (Copy)`,
-        order: slides.length
-      }
-      setSlides([...slides, duplicatedSlide])
-      setSelectedSlideIndex(slides.length)
-      toast.success('Slide duplicated')
-    }
-  }, [selectedSlideIndex, slides])
-
-  const handleDeleteSlide = useCallback((slideId: string) => {
-    if (slides.length > 1) {
-      const newSlides = slides.filter(slide => slide.id !== slideId)
-      setSlides(newSlides)
-      if (selectedSlideIndex >= newSlides.length) {
-        setSelectedSlideIndex(newSlides.length - 1)
-      }
-      toast.success('Slide deleted')
-    } else {
-      toast.error('Cannot delete the last slide')
-    }
-  }, [slides, selectedSlideIndex])
-
-  const handleSlideUpdate = useCallback((updatedSlide: Slide, index: number) => {
-    const newSlides = [...slides]
-    newSlides[index] = updatedSlide
-    setSlides(newSlides)
-    toast.success('Slide updated')
-  }, [slides])
-
-  const handleSlideReorder = useCallback((reorderedSlides: Slide[]) => {
-    setSlides(reorderedSlides)
-    toast.success('Slides reordered')
-  }, [])
-
-  const handleSavePresentation = useCallback(() => {
-    const presentationData = {
-      title: presentationTitle,
-      slides: slides,
-      savedAt: new Date().toISOString()
-    }
-    localStorage.setItem('presentation', JSON.stringify(presentationData))
-    toast.success('Presentation saved successfully')
-  }, [presentationTitle, slides])
-
-  const handleStartPresentation = useCallback(() => {
-    setIsPresentationMode(true)
-    toast.info('Starting presentation mode...')
-  }, [])
+  const [showSettings, setShowSettings] = useState(false)
+  const [presentationTitle, setPresentationTitle] = useState('Untitled Presentation')
+  const [isPresentationMode, setIsPresentationMode] = useState(false)
 
   const handleGeneratePresentation = async () => {
     if (!prompt.trim()) {
@@ -199,15 +63,11 @@ export default function Home() {
     try {
       const response = await fetch('/api/generate-presentation', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to generate presentation')
-      }
+      if (!response.ok) throw new Error('Failed to generate')
 
       const presentation = await response.json()
       setSlides(presentation.slides)
@@ -215,29 +75,59 @@ export default function Home() {
       setSelectedSlideIndex(0)
       toast.success('Presentation generated successfully!')
     } catch (error) {
-      console.error('Error generating presentation:', error)
       toast.error('Failed to generate presentation')
     } finally {
       setIsGenerating(false)
     }
   }
 
-  const handleExportPresentation = async () => {
+  const addNewSlide = useCallback(() => {
+    const newSlide: Slide = {
+      id: Date.now().toString(),
+      title: `Slide ${slides.length + 1}`,
+      content: '<div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 60px 20px; height: 100vh; display: flex; align-items: center; justify-content: center;"><div style="text-align: center; max-width: 800px;"><h2 style="font-size: 2.5rem; font-weight: 600; color: #1a1a1a; margin-bottom: 1rem;">New Slide</h2><p style="font-size: 1.25rem; color: #666; line-height: 1.6;">Add your content here</p></div></div>',
+      layout: 'content',
+      order: slides.length
+    }
+    setSlides([...slides, newSlide])
+    setSelectedSlideIndex(slides.length)
+  }, [slides])
+
+  const duplicateSlide = useCallback(() => {
+    if (selectedSlideIndex >= 0 && selectedSlideIndex < slides.length) {
+      const currentSlide = slides[selectedSlideIndex]
+      const duplicatedSlide: Slide = {
+        ...currentSlide,
+        id: Date.now().toString(),
+        title: `${currentSlide.title} (Copy)`,
+        order: slides.length
+      }
+      setSlides([...slides, duplicatedSlide])
+      setSelectedSlideIndex(slides.length)
+    }
+  }, [selectedSlideIndex, slides])
+
+  const deleteSlide = useCallback(() => {
+    if (slides.length > 1) {
+      const newSlides = slides.filter((_, index) => index !== selectedSlideIndex)
+      setSlides(newSlides)
+      setSelectedSlideIndex(Math.max(0, selectedSlideIndex - 1))
+    }
+  }, [slides, selectedSlideIndex])
+
+  const handleStartPresentation = useCallback(() => {
+    setIsPresentationMode(true)
+  }, [])
+
+  const exportPresentation = useCallback(async () => {
     try {
       const response = await fetch('/api/export-presentation', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: presentationTitle,
-          slides: slides
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: presentationTitle, slides })
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to export presentation')
-      }
+      if (!response.ok) throw new Error('Export failed')
 
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
@@ -251,329 +141,248 @@ export default function Home() {
       
       toast.success('Presentation exported successfully!')
     } catch (error) {
-      console.error('Error exporting presentation:', error)
       toast.error('Failed to export presentation')
     }
-  }
+  }, [presentationTitle, slides])
 
-  const handleTemplateSelect = (template: any) => {
-    // Apply template to current slide or all slides
-    toast.success(`Template "${template.name}" applied`)
-    setShowTemplates(false)
-  }
+  const currentSlide = slides[selectedSlideIndex]
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Presentation Mode Overlay */}
+    <div className="min-h-screen bg-gray-50">
+      {/* Z.AI Presentation Mode Overlay */}
       {isPresentationMode && (
-        <PresentationMode
+        <ZAIPresentationMode
           slides={slides}
           startIndex={selectedSlideIndex}
           onClose={() => setIsPresentationMode(false)}
         />
       )}
 
-      {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Presentation className="h-8 w-8 text-primary" />
-                <h1 className="text-2xl font-bold">AI Slides</h1>
-              </div>
-              <Input
-                value={presentationTitle}
-                onChange={(e) => setPresentationTitle(e.target.value)}
-                className="w-64"
-                placeholder="Presentation title"
-              />
-            </div>
-            
+      {/* Header - Z.AI Style */}
+      <header className="bg-white border-b border-gray-200 px-6 py-4 zai-bg-white">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowKeyboardHelp(true)}
-                title="Keyboard Shortcuts"
-              >
-                <HelpCircle className="h-4 w-4" />
-              </Button>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowTemplates(!showTemplates)}
-              >
-                <Lightbulb className="h-4 w-4 mr-2" />
-                Templates
-              </Button>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleSavePresentation}
-              >
-                <Save className="h-4 w-4 mr-2" />
-                Save
-              </Button>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleExportPresentation}
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
-              
-              <Button
-                size="sm"
-                onClick={handleStartPresentation}
-              >
-                <Play className="h-4 w-4 mr-2" />
-                Present
-              </Button>
+              <div className="w-8 h-8 zai-brand-gradient rounded-lg flex items-center justify-center">
+                <Zap className="w-5 h-5 text-white" />
+              </div>
+              <h1 className="text-xl font-semibold zai-text-primary">Z.AI Slides</h1>
             </div>
+            <Input
+              value={presentationTitle}
+              onChange={(e) => setPresentationTitle(e.target.value)}
+              className="w-64 zai-input"
+              placeholder="Presentation title"
+            />
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="zai-btn-secondary">
+              <Settings className="w-4 h-4 mr-2" />
+              Settings
+            </Button>
+            <Button variant="outline" size="sm" onClick={exportPresentation} className="zai-btn-secondary">
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </Button>
+            <Button size="sm" onClick={handleStartPresentation} className="zai-btn-primary">
+              <Play className="w-4 h-4 mr-2" />
+              Present
+            </Button>
           </div>
         </div>
       </header>
 
-      {/* AI Generation Section */}
-      <Card className="m-4">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            AI Presentation Generator
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <Textarea
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Describe what you want to create a presentation about... (e.g., 'Introduction to Machine Learning', 'Q4 Business Review', 'Product Launch Strategy')"
-                rows={3}
-                className="resize-none"
-              />
+      <div className="flex h-[calc(100vh-73px)]">
+        {/* Left Sidebar - Slide Thumbnails */}
+        <div className="w-80 zai-bg-white border-r border-gray-200 flex flex-col">
+          <div className="p-4 border-b border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold zai-text-primary">Slides</h2>
+              <span className="text-sm zai-text-muted">{slides.length}</span>
             </div>
-            <div className="flex flex-col gap-2">
-              <Button
-                onClick={handleGeneratePresentation}
-                disabled={isGenerating || !prompt.trim()}
-                className="min-w-[140px]"
-              >
-                {isGenerating ? (
-                  <>
-                    <Zap className="h-4 w-4 mr-2 animate-pulse" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    Generate
-                  </>
-                )}
-              </Button>
-              
-              <Button
-                variant="outline"
-                onClick={() => setShowTemplates(!showTemplates)}
-                className="min-w-[140px]"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Templates
-              </Button>
-            </div>
+            <Button onClick={addNewSlide} className="w-full zai-btn-primary" size="sm">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Slide
+            </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Main Content */}
-      <div className="container mx-auto px-4 pb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Left Sidebar - Slide List */}
-          <div className="lg:col-span-1">
-            <SlideList
-              slides={slides}
-              selectedSlideIndex={selectedSlideIndex}
-              onSlideSelect={setSelectedSlideIndex}
-              onSlideUpdate={handleSlideUpdate}
-              onSlideDelete={handleDeleteSlide}
-              onSlideAdd={handleAddSlide}
-              onSlideReorder={handleSlideReorder}
-            />
-          </div>
-
-          {/* Main Canvas - Slide Renderer */}
-          <div className="lg:col-span-2">
-            <Card className="h-[600px]">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">
-                    Slide {selectedSlideIndex + 1} of {slides.length}
-                  </CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline">
-                      {slides[selectedSlideIndex]?.layout || 'content'}
-                    </Badge>
+          
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {slides.map((slide, index) => (
+              <Card 
+                key={slide.id}
+                className={`cursor-pointer transition-all zai-card ${
+                  index === selectedSlideIndex 
+                    ? 'ring-2 ring-purple-500 bg-purple-50' 
+                    : 'hover:zai-hover-shadow'
+                }`}
+                onClick={() => setSelectedSlideIndex(index)}
+              >
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium zai-text-primary truncate">
+                      {slide.title}
+                    </span>
+                    {index === selectedSlideIndex && (
+                      <div className="w-2 h-2 bg-purple-500 rounded-full zai-pulse"></div>
+                    )}
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent className="h-[520px] p-0">
-                {slides[selectedSlideIndex] && (
-                  <SlideRenderer
-                    slide={slides[selectedSlideIndex]}
-                    isPreview={true}
+                  <div 
+                    className="h-24 bg-gray-100 rounded border border-gray-200 overflow-hidden"
+                    dangerouslySetInnerHTML={{ __html: slide.content }}
                   />
-                )}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            ))}
           </div>
 
-          {/* Right Sidebar - Tools & Settings */}
-          <div className="lg:col-span-1 space-y-4">
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleAddSlide}
-                  className="w-full justify-start"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  New Slide (Ctrl+N)
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleDuplicateSlide}
-                  className="w-full justify-start"
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  Duplicate (Ctrl+D)
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleDeleteSlide(slides[selectedSlideIndex]?.id)}
-                  className="w-full justify-start text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete (Del)
-                </Button>
-              </CardContent>
-            </Card>
+          {/* Slide Actions */}
+          <div className="p-4 border-t border-gray-200 space-y-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full zai-btn-secondary"
+              onClick={duplicateSlide}
+            >
+              <Copy className="w-4 h-4 mr-2" />
+              Duplicate
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full text-red-600 hover:text-red-700 zai-btn-secondary"
+              onClick={deleteSlide}
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete
+            </Button>
+          </div>
+        </div>
 
-            {/* Keyboard Shortcuts */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Shortcuts</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm">
-                {Object.entries(shortcuts).slice(0, 6).map(([key, shortcut]) => (
-                  <div key={key} className="flex justify-between">
-                    <span className="text-muted-foreground">{shortcut.description}</span>
-                    <Badge variant="secondary" className="text-xs">
-                      {key.replace('Ctrl', '⌘')}
-                    </Badge>
+        {/* Main Content - Canvas + AI Generator */}
+        <div className="flex-1 flex flex-col">
+          {/* AI Generator */}
+          <div className="zai-bg-white border-b border-gray-200 p-6">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <Textarea
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    placeholder="Describe what you want to create a presentation about... (e.g., 'Introduction to Machine Learning', 'Q4 Business Review', 'Product Launch Strategy')"
+                    rows={3}
+                    className="resize-none zai-input"
+                  />
+                </div>
+                <Button 
+                  onClick={handleGeneratePresentation}
+                  disabled={isGenerating || !prompt.trim()}
+                  className="px-8 py-6 h-auto zai-btn-primary"
+                >
+                  {isGenerating ? (
+                    <>
+                      <Wand2 className="w-5 h-5 mr-2 animate-pulse" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-5 h-5 mr-2" />
+                      Generate with AI
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Canvas */}
+          <div className="flex-1 zai-canvas p-8 overflow-auto">
+            <div className="max-w-6xl mx-auto h-full">
+              {currentSlide ? (
+                <div 
+                  className="bg-white rounded-lg shadow-lg overflow-hidden zai-card zai-fade-in"
+                  style={{ minHeight: '600px' }}
+                  dangerouslySetInnerHTML={{ __html: currentSlide.content }}
+                />
+              ) : (
+                <div className="h-full flex items-center justify-center">
+                  <div className="text-center">
+                    <FileText className="w-16 h-16 mx-auto mb-4 zai-text-muted" />
+                    <h3 className="text-xl font-semibold zai-text-primary mb-2">
+                      No slides yet
+                    </h3>
+                    <p className="zai-text-muted mb-6">
+                      Generate a presentation with AI or add slides manually
+                    </p>
+                    <Button onClick={addNewSlide} className="zai-btn-primary">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add First Slide
+                    </Button>
                   </div>
-                ))}
-              </CardContent>
-            </Card>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
 
-            {/* Presentation Info */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Presentation Info</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Slides:</span>
-                  <Badge variant="outline">{slides.length}</Badge>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Current:</span>
-                  <Badge variant="outline">{selectedSlideIndex + 1}</Badge>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Layouts:</span>
-                  <Badge variant="outline">7 Types</Badge>
-                </div>
-              </CardContent>
-            </Card>
+        {/* Right Sidebar - Tools */}
+        <div className="w-80 zai-bg-white border-l border-gray-200 p-4">
+          <h3 className="font-semibold zai-text-primary mb-4">Tools</h3>
+          
+          <div className="space-y-6">
+            {/* Quick Actions */}
+            <div>
+              <h4 className="text-sm font-medium zai-text-secondary mb-3">Quick Actions</h4>
+              <div className="grid grid-cols-2 gap-2">
+                <Button variant="outline" size="sm" className="h-12 flex flex-col zai-btn-secondary">
+                  <Type className="w-4 h-4 mb-1" />
+                  <span className="text-xs">Text</span>
+                </Button>
+                <Button variant="outline" size="sm" className="h-12 flex flex-col zai-btn-secondary">
+                  <ImageIcon className="w-4 h-4 mb-1" />
+                  <span className="text-xs">Image</span>
+                </Button>
+                <Button variant="outline" size="sm" className="h-12 flex flex-col zai-btn-secondary">
+                  <BarChart3 className="w-4 h-4 mb-1" />
+                  <span className="text-xs">Chart</span>
+                </Button>
+                <Button variant="outline" size="sm" className="h-12 flex flex-col zai-btn-secondary">
+                  <Layout className="w-4 h-4 mb-1" />
+                  <span className="text-xs">Layout</span>
+                </Button>
+              </div>
+            </div>
+
+            {/* Templates */}
+            <div>
+              <h4 className="text-sm font-medium zai-text-secondary mb-3">Templates</h4>
+              <div className="space-y-2">
+                {['Title', 'Content', 'Two Column', 'Image', 'Quote', 'Team', 'Timeline'].map((template) => (
+                  <Button key={template} variant="outline" size="sm" className="w-full justify-start zai-btn-secondary">
+                    <Layers className="w-4 h-4 mr-2" />
+                    {template} Slide
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Design */}
+            <div>
+              <h4 className="text-sm font-medium zai-text-secondary mb-3">Design</h4>
+              <div className="space-y-2">
+                <Button variant="outline" size="sm" className="w-full justify-start zai-btn-secondary">
+                  <Palette className="w-4 h-4 mr-2" />
+                  Themes
+                </Button>
+                <Button variant="outline" size="sm" className="w-full justify-start zai-btn-secondary">
+                  <Eye className="w-4 h-4 mr-2" />
+                  Preview
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Template Selector Modal */}
-      {showTemplates && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-background rounded-lg p-6 max-w-4xl max-h-[80vh] overflow-y-auto w-full mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold">Choose a Template</h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowTemplates(false)}
-              >
-                ×
-              </Button>
-            </div>
-            <SlideTemplateSelector onSelect={handleTemplateSelect} />
-          </div>
-        </div>
-      )}
-
-      {/* Keyboard Shortcuts Help Modal */}
-      {showKeyboardHelp && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-background rounded-lg p-6 max-w-2xl w-full mx-4">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold">Keyboard Shortcuts</h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowKeyboardHelp(false)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(shortcuts).map(([key, shortcut]) => (
-                <div key={key} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Badge variant="secondary" className="font-mono">
-                      {key.replace('Ctrl', '⌘')}
-                    </Badge>
-                    <span className="text-sm">{shortcut.description}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="mt-6 p-4 bg-muted rounded-lg">
-              <p className="text-sm text-muted-foreground">
-                <strong>Pro tip:</strong> Use these shortcuts to work faster and more efficiently with your presentations.
-              </p>
-            </div>
-            
-            <div className="mt-6 flex justify-end">
-              <Button onClick={() => setShowKeyboardHelp(false)}>
-                Got it!
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

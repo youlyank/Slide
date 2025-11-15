@@ -1,4 +1,4 @@
-# AI Slides - Intelligent Presentation Generator
+# Slide - AI-Powered Presentation Generator
 
 A modern, AI-powered presentation generator built with Next.js 15, TypeScript, and Tailwind CSS. Create stunning presentations with real-time collaboration, multiple slide templates, and intelligent content generation.
 
@@ -11,6 +11,8 @@ A modern, AI-powered presentation generator built with Next.js 15, TypeScript, a
 - **Export Options**: Export presentations as HTML, Text, or JSON
 - **User Authentication**: Secure sign-in with NextAuth.js
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
+- **Keyboard Shortcuts**: Work efficiently with comprehensive keyboard shortcuts
+- **Professional UI**: Modern interface with three-panel layout
 
 ### Slide Templates
 1. **Title Slide**: Perfect for introducing your presentation
@@ -26,6 +28,15 @@ A modern, AI-powered presentation generator built with Next.js 15, TypeScript, a
 - **Live User Indicators**: Know who's currently editing
 - **Slide Synchronization**: Automatic sync across all connected users
 - **Connection Status**: Visual indicators for online/offline status
+
+### Keyboard Shortcuts
+- **Ctrl+S**: Save presentation
+- **Ctrl+N**: Add new slide
+- **Ctrl+D**: Duplicate current slide
+- **Delete**: Delete current slide
+- **Arrow Left/Right**: Navigate between slides
+- **Enter**: Start presentation mode
+- **Help Button**: Visual guide to all shortcuts
 
 ## 🛠 Technology Stack
 
@@ -51,8 +62,8 @@ A modern, AI-powered presentation generator built with Next.js 15, TypeScript, a
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd ai-slides
+   git clone https://github.com/youlyank/Slide.git
+   cd Slide
    ```
 
 2. **Install dependencies**
@@ -93,9 +104,10 @@ A modern, AI-powered presentation generator built with Next.js 15, TypeScript, a
 
 Simply describe your topic, and the AI will create a complete presentation with:
 - Relevant slide titles
-- Engaging content
+- Engaging content with HTML styling
 - Appropriate layouts
 - Professional structure
+- Embedded images when relevant
 
 Example prompts:
 - "Introduction to Machine Learning"
@@ -117,17 +129,21 @@ src/
 │   ├── api/               # API routes
 │   │   ├── auth/         # Authentication endpoints
 │   │   ├── socket/       # WebSocket handling
-│   │   └── ...
+│   │   ├── generate-presentation/ # AI generation
+│   │   └── export-presentation/   # Export functionality
 │   ├── auth/             # Authentication pages
-│   └── ...
+│   └── page.tsx          # Main application page
 ├── components/            # React components
 │   ├── ui/              # shadcn/ui components
+│   ├── slide-editor.tsx
+│   ├── slide-list.tsx
 │   ├── slide-renderer.tsx
 │   ├── slide-template-selector.tsx
-│   └── providers.tsx
+│   └── slide-thumbnail.tsx
 ├── hooks/               # Custom React hooks
 │   ├── use-socket.ts
-│   └── ...
+│   ├── use-keyboard-shortcuts.ts
+│   └── use-toast.ts
 ├── lib/                 # Utility functions
 │   └── socket.ts
 └── ...
@@ -168,8 +184,8 @@ npm start
 
 ### Docker Support
 ```bash
-docker build -t ai-slides .
-docker run -p 3000:3000 ai-slides
+docker build -t slide .
+docker run -p 3000:3000 slide
 ```
 
 ## 🔧 Configuration
@@ -245,4 +261,4 @@ For support and questions:
 
 ---
 
-**AI Slides** - Transform your ideas into stunning presentations with the power of AI. 🚀
+**Slide** - Transform your ideas into stunning presentations with the power of AI. 🚀

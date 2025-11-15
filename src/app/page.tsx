@@ -26,6 +26,7 @@ import {
 import { SlideList } from '@/components/slide-list'
 import { SlideRenderer } from '@/components/slide-renderer'
 import { SlideTemplateSelector } from '@/components/slide-template-selector'
+import { PresentationMode } from '@/components/presentation-mode'
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts'
 import { toast } from 'sonner'
 
@@ -59,6 +60,7 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [showTemplates, setShowTemplates] = useState(false)
   const [showKeyboardHelp, setShowKeyboardHelp] = useState(false)
+  const [isPresentationMode, setIsPresentationMode] = useState(false)
   const [prompt, setPrompt] = useState('')
 
   // Initialize keyboard shortcuts
@@ -183,8 +185,8 @@ export default function Home() {
   }, [presentationTitle, slides])
 
   const handleStartPresentation = useCallback(() => {
+    setIsPresentationMode(true)
     toast.info('Starting presentation mode...')
-    // This would open a fullscreen presentation view
   }, [])
 
   const handleGeneratePresentation = async () => {
@@ -262,6 +264,15 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Presentation Mode Overlay */}
+      {isPresentationMode && (
+        <PresentationMode
+          slides={slides}
+          startIndex={selectedSlideIndex}
+          onClose={() => setIsPresentationMode(false)}
+        />
+      )}
+
       {/* Header */}
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-3">

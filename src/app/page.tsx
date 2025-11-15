@@ -41,7 +41,7 @@ export default function Home() {
     {
       id: '1',
       title: 'Welcome to Z.AI Slides',
-      content: '<div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; text-align: center; padding: 60px 20px; height: 100vh; display: flex; flex-direction: column; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin: 0;"><h1 style="font-size: 3.5rem; font-weight: 700; margin-bottom: 1rem; background: linear-gradient(45deg, #fff, #f0f0f0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Welcome to Z.AI Slides</h1><p style="font-size: 1.5rem; opacity: 0.9; max-width: 800px; margin: 0 auto; line-height: 1.6;">Transform your ideas into stunning presentations with AI</p></div>',
+      content: '<div style="font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 80px 40px; border-radius: 16px; min-height: 500px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.1);"><h1 style="font-size: 3.5rem; font-weight: 700; margin-bottom: 1.5rem; line-height: 1.2; text-align: center;">Welcome to Z.AI Slides</h1><p style="font-size: 1.8rem; opacity: 0.95; max-width: 800px; line-height: 1.6; text-align: center;">Transform your ideas into stunning presentations with AI</p><div style="margin-top: 2rem; padding: 1rem 2rem; background: rgba(255,255,255,0.1); border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);"><span style="font-size: 1.1rem; font-weight: 500;">✨ Powered by Advanced AI Technology</span></div></div>',
       layout: 'title',
       order: 0
     }
@@ -85,7 +85,7 @@ export default function Home() {
     const newSlide: Slide = {
       id: Date.now().toString(),
       title: `Slide ${slides.length + 1}`,
-      content: '<div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 60px 20px; height: 100vh; display: flex; align-items: center; justify-content: center;"><div style="text-align: center; max-width: 800px;"><h2 style="font-size: 2.5rem; font-weight: 600; color: #1a1a1a; margin-bottom: 1rem;">New Slide</h2><p style="font-size: 1.25rem; color: #666; line-height: 1.6;">Add your content here</p></div></div>',
+      content: '<div style="font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); color: #1a202c; padding: 60px 40px; border-radius: 12px; min-height: 400px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);"><div style="text-align: center; max-width: 600px;"><h2 style="font-size: 2rem; font-weight: 600; color: #1a202c; margin-bottom: 1rem; line-height: 1.2;">New Slide</h2><p style="font-size: 1.1rem; color: #4a5568; line-height: 1.6;">Add your content here or use AI to generate professional slides</p><div style="margin-top: 2rem; padding: 1rem; background: rgba(102, 126, 234, 0.1); border-radius: 8px; border: 1px solid rgba(102, 126, 234, 0.2);"><span style="font-size: 0.9rem; color: #667eea; font-weight: 500;">💡 Pro Tip:</span><span style="font-size: 0.9rem; color: #4a5568; margin-left: 0.5rem;">Use AI generator to create stunning presentations instantly</span></div></div></div>',
       layout: 'content',
       order: slides.length
     }

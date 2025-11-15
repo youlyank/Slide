@@ -7,8 +7,12 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Edit2, Type, Palette, Layout, Image, Quote, Users, Clock } from 'lucide-react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Edit2, Type, Palette, Layout, Image, Quote, Users, Clock, Picture, BarChart3, Shapes } from 'lucide-react'
 import { Slide } from '@/app/page'
+import { ImageManager } from './image-manager'
+import { ChartGenerator } from './chart-generator'
+import { RichContentEditor } from './rich-content-editor'
 
 interface SlideEditorProps {
   slide: Slide
@@ -20,6 +24,9 @@ interface SlideEditorProps {
 export function SlideEditor({ slide, onUpdate, isSelected, onSelect }: SlideEditorProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editedSlide, setEditedSlide] = useState<Slide>(slide)
+  const [showImageManager, setShowImageManager] = useState(false)
+  const [showChartGenerator, setShowChartGenerator] = useState(false)
+  const [activeTab, setActiveTab] = useState('content')
 
   const handleSave = useCallback(() => {
     onUpdate(editedSlide)
@@ -37,6 +44,24 @@ export function SlideEditor({ slide, onUpdate, isSelected, onSelect }: SlideEdit
     onSelect()
   }, [slide, onSelect])
 
+  const handleImageSelect = useCallback((image: any) => {
+    const imageHtml = `<img src="${image.url}" alt="${image.name}" style="max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0;" />`
+    setEditedSlide(prev => ({
+      ...prev,
+      content: (prev.content || '') + imageHtml
+    }))
+    setShowImageManager(false)
+  }, [])
+
+  const handleChartGenerate = useCallback((chartConfig: any) => {
+    const chartHtml = `<div style="margin: 20px 0; text-align: center;">${chartConfig.svg || 'Chart generated'}</div>`
+    setEditedSlide(prev => ({
+      ...prev,
+      content: (prev.content || '') + chartHtml
+    }))
+    setShowChartGenerator(false)
+  }, [])
+
   const getLayoutIcon = (layout: string) => {
     switch (layout) {
       case 'title': return <Type className="h-4 w-4" />
@@ -52,99 +77,190 @@ export function SlideEditor({ slide, onUpdate, isSelected, onSelect }: SlideEdit
 
   if (isEditing) {
     return (
-      <Card className={`w-full h-full ${isSelected ? 'ring-2 ring-primary' : ''}`}>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">Edit Slide</CardTitle>
-            <div className="flex gap-2">
-              <Button size="sm" variant="outline" onClick={handleCancel}>
-                Cancel
-              </Button>
-              <Button size="sm" onClick={handleSave}>
-                Save
-              </Button>
+      <>
+        <Card className={`w-full h-full ${isSelected ? 'ring-2 ring-primary' : ''}`}>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">Edit Slide</CardTitle>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <Button size="sm" onClick={handleSave}>
+                  Save
+                </Button>
+              </div>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <label className="text-sm font-medium mb-2 block">Slide Title</label>
-            <Input
-              value={editedSlide.title}
-              onChange={(e) => setEditedSlide({ ...editedSlide, title: e.target.value })}
-              placeholder="Enter slide title"
-              className="w-full"
-            />
-          </div>
-          
-          <div>
-            <label className="text-sm font-medium mb-2 block">Content</label>
-            <Textarea
-              value={editedSlide.content}
-              onChange={(e) => setEditedSlide({ ...editedSlide, content: e.target.value })}
-              placeholder="Enter slide content"
-              rows={6}
-              className="w-full"
-            />
-          </div>
-          
-          <div>
-            <label className="text-sm font-medium mb-2 block">Layout</label>
-            <Select 
-              value={editedSlide.layout} 
-              onValueChange={(value: Slide['layout']) => setEditedSlide({ ...editedSlide, layout: value })}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="title">
-                  <div className="flex items-center gap-2">
-                    <Type className="h-4 w-4" />
-                    Title Slide
-                  </div>
-                </SelectItem>
-                <SelectItem value="content">
-                  <div className="flex items-center gap-2">
-                    <Edit2 className="h-4 w-4" />
-                    Content Slide
-                  </div>
-                </SelectItem>
-                <SelectItem value="two-column">
-                  <div className="flex items-center gap-2">
-                    <Layout className="h-4 w-4" />
-                    Two Column
-                  </div>
-                </SelectItem>
-                <SelectItem value="image">
-                  <div className="flex items-center gap-2">
-                    <Image className="h-4 w-4" aria-label="Image slide" />
-                    Image Slide
-                  </div>
-                </SelectItem>
-                <SelectItem value="quote">
-                  <div className="flex items-center gap-2">
-                    <Quote className="h-4 w-4" />
-                    Quote Slide
-                  </div>
-                </SelectItem>
-                <SelectItem value="team">
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    Team Slide
-                  </div>
-                </SelectItem>
-                <SelectItem value="timeline">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4" />
-                    Timeline
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="content" className="flex items-center gap-2">
+                  <Edit2 className="h-4 w-4" />
+                  Content
+                </TabsTrigger>
+                <TabsTrigger value="visual" className="flex items-center gap-2">
+                  <Shapes className="h-4 w-4" />
+                  Visual
+                </TabsTrigger>
+                <TabsTrigger value="images" className="flex items-center gap-2">
+                  <Picture className="h-4 w-4" />
+                  Images
+                </TabsTrigger>
+                <TabsTrigger value="charts" className="flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4" />
+                  Charts
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="content" className="p-6 space-y-4 mt-0">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Slide Title</label>
+                  <Input
+                    value={editedSlide.title}
+                    onChange={(e) => setEditedSlide({ ...editedSlide, title: e.target.value })}
+                    placeholder="Enter slide title"
+                    className="w-full"
+                  />
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Content</label>
+                  <Textarea
+                    value={editedSlide.content}
+                    onChange={(e) => setEditedSlide({ ...editedSlide, content: e.target.value })}
+                    placeholder="Enter slide content (HTML supported)"
+                    rows={8}
+                    className="w-full font-mono text-sm"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    You can use HTML tags for formatting. Images and charts will be added here.
+                  </p>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Layout</label>
+                  <Select 
+                    value={editedSlide.layout} 
+                    onValueChange={(value: Slide['layout']) => setEditedSlide({ ...editedSlide, layout: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="title">
+                        <div className="flex items-center gap-2">
+                          <Type className="h-4 w-4" />
+                          Title Slide
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="content">
+                        <div className="flex items-center gap-2">
+                          <Edit2 className="h-4 w-4" />
+                          Content Slide
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="two-column">
+                        <div className="flex items-center gap-2">
+                          <Layout className="h-4 w-4" />
+                          Two Column
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="image">
+                        <div className="flex items-center gap-2">
+                          <Image className="h-4 w-4" aria-label="Image slide" />
+                          Image Slide
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="quote">
+                        <div className="flex items-center gap-2">
+                          <Quote className="h-4 w-4" />
+                          Quote Slide
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="team">
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4" />
+                          Team Slide
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="timeline">
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-4 w-4" />
+                          Timeline
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="visual" className="p-6 mt-0">
+                <div className="h-[400px]">
+                  <RichContentEditor 
+                    onContentChange={(elements) => {
+                      const visualHtml = elements.map(el => {
+                        return `<div class="visual-element" data-type="${el.type}" style="position: absolute; left: ${el.x}px; top: ${el.y}px; width: ${el.width}px; height: ${el.height}px;">${el.content || ''}</div>`
+                      }).join('')
+                      
+                      setEditedSlide(prev => ({
+                        ...prev,
+                        content: (prev.content || '') + visualHtml
+                      }))
+                    }}
+                    initialElements={[]}
+                  />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="images" className="p-6 mt-0">
+                <div className="text-center">
+                  <Button 
+                    onClick={() => setShowImageManager(true)}
+                    className="mb-4"
+                  >
+                    <Picture className="h-4 w-4 mr-2" />
+                    Open Image Manager
+                  </Button>
+                  <p className="text-sm text-muted-foreground">
+                    Upload images or generate with AI to add to your slide
+                  </p>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="charts" className="p-6 mt-0">
+                <div className="text-center">
+                  <Button 
+                    onClick={() => setShowChartGenerator(true)}
+                    className="mb-4"
+                  >
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Create Chart
+                  </Button>
+                  <p className="text-sm text-muted-foreground">
+                    Create bar charts, pie charts, line charts and more
+                  </p>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+
+        {/* Modals */}
+        {showImageManager && (
+          <ImageManager 
+            onImageSelect={handleImageSelect}
+            onClose={() => setShowImageManager(false)}
+          />
+        )}
+
+        {showChartGenerator && (
+          <ChartGenerator 
+            onChartGenerate={handleChartGenerate}
+            onClose={() => setShowChartGenerator(false)}
+          />
+        )}
+      </>
     )
   }
 

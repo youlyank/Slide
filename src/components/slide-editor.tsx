@@ -42,7 +42,7 @@ export function SlideEditor({ slide, onUpdate, isSelected, onSelect }: SlideEdit
       case 'title': return <Type className="h-4 w-4" />
       case 'content': return <Edit2 className="h-4 w-4" />
       case 'two-column': return <Layout className="h-4 w-4" />
-      case 'image': return <Image className="h-4 w-4" />
+      case 'image': return <Image className="h-4 w-4" aria-label="Image layout" />
       case 'quote': return <Quote className="h-4 w-4" />
       case 'team': return <Users className="h-4 w-4" />
       case 'timeline': return <Clock className="h-4 w-4" />
@@ -118,7 +118,7 @@ export function SlideEditor({ slide, onUpdate, isSelected, onSelect }: SlideEdit
                 </SelectItem>
                 <SelectItem value="image">
                   <div className="flex items-center gap-2">
-                    <Image className="h-4 w-4" />
+                    <Image className="h-4 w-4" aria-label="Image slide" />
                     Image Slide
                   </div>
                 </SelectItem>

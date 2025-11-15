@@ -93,27 +93,41 @@ const keyboardShortcuts: KeyboardShortcuts = {
 }
 
 export const useKeyboardShortcuts = () => {
-  useEffect(() => {
-    const handleKeyDown = useCallback((event: KeyboardEvent) => {
-      // Prevent default browser behavior for our shortcuts
-      if (event.ctrlKey || event.metaKey) {
-        event.preventDefault()
-        
-        const key = event.key
-        const shortcut = keyboardShortcuts[key as keyof typeof keyboardShortcuts]
-        
-        if (shortcut) {
-          shortcut.action()
-        }
-      }
-    }, [])
+  const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    // Build the shortcut key string
+    let shortcutKey = ''
+    if (event.ctrlKey || event.metaKey) {
+      shortcutKey += 'Ctrl+'
+    }
+    if (event.shiftKey) {
+      shortcutKey += 'Shift+'
+    }
+    if (event.altKey) {
+      shortcutKey += 'Alt+'
+    }
+    
+    // Add the main key
+    if (event.key.length === 1 && event.key.match(/[a-z]/i)) {
+      shortcutKey += event.key.toUpperCase()
+    } else {
+      shortcutKey += event.key
+    }
 
+    // Check if this is a registered shortcut
+    const shortcut = keyboardShortcuts[shortcutKey]
+    if (shortcut) {
+      event.preventDefault()
+      shortcut.action()
+    }
+  }, [])
+
+  useEffect(() => {
     document.addEventListener('keydown', handleKeyDown)
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [])
+  }, [handleKeyDown])
 
   return keyboardShortcuts
 }
